@@ -12,7 +12,6 @@ const Home = () => {
     e.preventDefault();
     const newRoomId = uuid();
     setRoomId(newRoomId);
-    console.log(newRoomId);
     toast.success("New Room Created!");
   };
 

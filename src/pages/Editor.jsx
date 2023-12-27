@@ -1,12 +1,46 @@
-import React, { useState} from "react";
-// import { useLocation } from "react-router-dom";
+import React, { useEffect, useRef, useState} from "react";
 import Client from "../components/Client";
 import CodeEditor from "../components/CodeEditor";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
+import ACTIONS from "../Actions";
+import { initSocket } from "../Socket";
 
 const Editor = () => {
+
+    const socketRef = useRef(null);
+    const location = useLocation();
+    const homeNavigate = useNavigate();
+
+    useEffect(() => {
+      const init = async() => {
+        socketRef.current = await initSocket();
+
+        socketRef.current.on('connect_error', (err) => handleError(err));
+        socketRef.current.on('connect_failed', (err) => handleError(err));
+
+        const handleError = (err) => {
+          console.log("Socket Error ", err);
+          toast.error("Socket Connection failed, please try again");
+          homeNavigate("/");
+        }
+
+        socketRef.current.emit(ACTIONS.JOIN, {
+          roomId,
+          username: location.state?.username
+        });
+
+        socketRef.current.on(ACTIONS.JOINED, 
+          ({ clients, username, socketId }) => {
+            if(username !== location.state?.username) {
+              toast.success(`${username} joined the room`);
+            }
+        })
+
+      }
+      init();
+    }, []);
 
     const navigate = useNavigate();
     const [clientList, setClientList] = useState([
@@ -36,10 +70,11 @@ const Editor = () => {
             console.log(error);
             toast.error("Failed to Copy");
         })
-    }
+    };
 
-//   const location = useLocation();
-//   const { username } = location.state;
+    if(!location.state) {
+      <Navigate to="/"/>
+    }
 
   return (
     <div className="flex flex-row bg-slate-800 h-screen w-screen ">

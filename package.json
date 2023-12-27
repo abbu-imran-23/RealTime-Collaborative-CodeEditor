@@ -7,6 +7,8 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "codemirror": "^5.65.16",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "react": "^18.2.0",
     "react-avatar": "^5.0.3",
     "react-codemirror2": "^7.3.0",
@@ -14,6 +16,8 @@
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2",
     "uuid": "^9.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -21,7 +25,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "nodemon Server.js"
   },
   "eslintConfig": {
     "extends": [
@@ -42,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "nodemon": "^3.0.2",
     "tailwindcss": "^3.4.0"
   }
 }
