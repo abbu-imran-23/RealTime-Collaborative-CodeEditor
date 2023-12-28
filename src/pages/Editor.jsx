@@ -8,17 +8,21 @@ import ACTIONS from "../Actions";
 import { initSocket } from "../Socket";
 
 const Editor = () => {
-
-    const socketRef = useRef(null);
-    const location = useLocation();
-    const homeNavigate = useNavigate();
+  
+  const socketRef = useRef(null);
+  const codeChangeRef = useRef(null);
+  const location = useLocation();
+  const homeNavigate = useNavigate();
+  const navigate = useNavigate();
+  const [clientList, setClientList] = useState([]);
+  const { roomId } = useParams();
 
     useEffect(() => {
       const init = async() => {
         socketRef.current = await initSocket();
 
         socketRef.current.on('connect_error', (err) => handleError(err));
-        socketRef.current.on('connect_failed', (err) => handleError(err));
+        // socketRef.current.on('connect_failed', (err) => handleError(err));
 
         const handleError = (err) => {
           console.log("Socket Error ", err);
@@ -31,38 +35,40 @@ const Editor = () => {
           username: location.state?.username
         });
 
+        // Listening for JOINED Event
         socketRef.current.on(ACTIONS.JOINED, 
           ({ clients, username, socketId }) => {
             if(username !== location.state?.username) {
               toast.success(`${username} joined the room`);
             }
+            setClientList(clients);
+            socketRef.current.emit(ACTIONS.SYNC_CODE, {
+              code: codeChangeRef.current,
+              socketId
+            })
+        })
+
+        // Listening for DISCONNECTED Event
+        socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
+          toast.success(`${username} left the room`);
+          setClientList((prev) => {
+            return prev.filter(client => client.socketId !== socketId);
+          })
         })
 
       }
       init();
+
+      // Cleaning Function
+      return () => {
+        socketRef.current.disconnect();
+        socketRef.current.off(ACTIONS.JOINED);
+        socketRef.current.off(ACTIONS.DISCONNECTED);
+      }
+
     }, []);
 
-    const navigate = useNavigate();
-    const [clientList, setClientList] = useState([
-        {
-            socketId: 1,
-            username: "Imran Pasha"
-        },
-        {
-            socketId: 2,
-            username: "Roshan Ameen"
-        },
-        {
-            socketId: 3,
-            username: "Amarjeet"
-        },
-        {
-            socketId: 4,
-            username: "Suraj Gurjar"
-        }
-    ]);
-
-    const { roomId } = useParams();
+    // Copy Room Id
     const copyRoomId = () => {
         navigator.clipboard.writeText(roomId)
         .then(() => toast.success("Copied Room Id"))
@@ -117,7 +123,9 @@ const Editor = () => {
           className="bg-red-900 px-8 rounded-md py-1">Exit Room</button>
         </div>
       </div>
-      <CodeEditor/>
+      <CodeEditor socketRef={socketRef} roomId={roomId} onCodeChange={(code) => {
+        codeChangeRef.current = code;
+      }}/>
     </div>
   );
 };
