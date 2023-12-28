@@ -3,6 +3,7 @@ const http = require('http');
 const socketIO = require('socket.io');
 const dotenv = require('dotenv');
 const ACTIONS = require('./src/Actions');
+const path = require('path');
 
 dotenv.config();
 
@@ -16,6 +17,12 @@ const io = socketIO(server, {
         credential: true
     }
 });
+
+// Production Configs
+app.use(express.static('build'));
+app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+})
 
 const userSocketMap = {};
 
@@ -74,7 +81,7 @@ io.on("connection", (socket) => {
     });
 })
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Server listening at PORT ${PORT}`);
 })

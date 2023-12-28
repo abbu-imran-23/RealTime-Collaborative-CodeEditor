@@ -22,12 +22,13 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "run-p client server",
+    "start": "npm run build && npm run server",
+    "start:prod": "run-p client server",
     "client": "set PORT=3000 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "nodemon Server.js"
+    "server": "node Server.js"
   },
   "eslintConfig": {
     "extends": [
