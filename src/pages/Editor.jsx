@@ -66,6 +66,7 @@ const Editor = () => {
         socketRef.current.off(ACTIONS.DISCONNECTED);
       }
 
+      // eslint-disable-next-line
     }, []);
 
     // Copy Room Id

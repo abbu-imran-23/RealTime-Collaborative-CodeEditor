@@ -56,6 +56,7 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange }) => {
 
     init();
 
+    // eslint-disable-next-line
   },[])
 
   useEffect(() => {
@@ -68,10 +69,10 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange }) => {
     }
 
     return () => {
-      socketRef.current.off(ACTIONS.CODE_CHANGE);
+      socketRef.off(ACTIONS.CODE_CHANGE);
     }
 
-  }, [socketRef.current]);
+  }, [socketRef]);
 
   return (
     <div className='w-5/6 px-1 h-screen text-[1.35rem]'>
