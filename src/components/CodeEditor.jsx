@@ -69,10 +69,12 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange }) => {
     }
 
     return () => {
-      socketRef.off(ACTIONS.CODE_CHANGE);
+      // eslint-disable-next-line
+      socketRef.current.off(ACTIONS.CODE_CHANGE);
     }
 
-  }, [socketRef]);
+    // eslint-disable-next-line
+  }, [socketRef.current]);
 
   return (
     <div className='w-5/6 px-1 h-screen text-[1.35rem]'>
